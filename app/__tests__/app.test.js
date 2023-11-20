@@ -13,29 +13,18 @@ afterAll(() => {
 
 describe("GET /topics", () => {
     describe("-- functionality tests", () => {
-        test("200: responds with a status of 200 when there is an appropriate request", () => {
-            return request(app)
-            .get("/api/topics")
-            .expect(200)
-        })
-        test("200: responds with an array of topic objects", () => {
+        test("200: responds with a 200 status codea and an array of topic objects with appropriate key value pairs", () => {
             return request(app)
             .get("/api/topics")
             .expect(200)
             .then(({body}) => {
-                expect(Array.isArray(body.topics)).toBe(true)
+                body.topics.forEach( (topic) =>{ 
+                    expect(topic).toHaveProperty('description'); 
+                    expect(topic).toHaveProperty('slug');     
+                })
             })
         })
-        test("200: responds with an array of topic objects with properties slug and description", () => {
-            return request(app)
-            .get("/api/topics")
-            .expect(200)
-            .then(({body}) => {
-                expect(body.topics[0]).toHaveProperty(['description']); 
-                expect(body.topics[0]).toHaveProperty(['slug']); 
-            })
-        })
-    }) 
+    })
 })
 
 

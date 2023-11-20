@@ -4,7 +4,7 @@ const { handlePsqlErrors, handleCustomErrors, handleServerErrors } = require("./
 
 
 const app = express()
-app.use(express.json())
+
 
 app.get("/api/topics", getAllTopics)
 
