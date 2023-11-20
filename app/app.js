@@ -1,12 +1,13 @@
 const express = require("express");
-const { getAllTopics, fourOhFour } = require("./controllers/controllers");
+const { getAllTopics, fourOhFour, getAllEndpoints } = require("./controllers/controllers");
 const { handlePsqlErrors, handleCustomErrors, handleServerErrors } = require("./errors");
 
 
 const app = express()
 
-
 app.get("/api/topics", getAllTopics)
+
+app.get("/api", getAllEndpoints)
 
 app.all("*", fourOhFour)
 
