@@ -13,11 +13,12 @@ afterAll(() => {
 
 describe("GET /topics", () => {
     describe("-- functionality tests", () => {
-        test("200: responds with a 200 status codea and an array of topic objects with appropriate key value pairs", () => {
+        test("200: responds with a 200 status code and an array of length 3 with topic objects with appropriate key value pairs", () => {
             return request(app)
             .get("/api/topics")
             .expect(200)
             .then(({body}) => {
+                expect(body.topics.length >= 1).toBe(true)
                 body.topics.forEach( (topic) =>{ 
                     expect(topic).toHaveProperty('description'); 
                     expect(topic).toHaveProperty('slug');     
