@@ -28,7 +28,7 @@ describe("GET /topics", () => {
     })
 })
 
-describe.only("GET /articles/:article_id", () => {
+describe("GET /articles/:article_id", () => {
     describe("-- functionality tests", () => {
         test("200: Responds with a 200 status code, correct key value pairs and only one response object as the article id is unique", () => {
             return request(app)
