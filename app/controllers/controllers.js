@@ -7,7 +7,6 @@ exports.fourOhFour = (req, res, next) => {
 exports.getAllTopics = (req, res, next) => { 
     return selectAllTopics()
     .then(({rows}) => { 
-        console.log(rows)
         res.status(200).send({topics : rows})
     })
     .catch((err) => { 
