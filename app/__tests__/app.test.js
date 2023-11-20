@@ -49,12 +49,25 @@ describe("GET /articles/:article_id", () => {
             })
         })
     })
+    describe("-- error tests", () => {
+        test("400: Should respond with 400 bad request error code, when given an invalid numerical id", () => {
+            return request(app)
+            .get("/api/articles/18")
+            .expect(400)
+            .then(({body}) => {
+            expect(body.msg).toBe('no article found')
+            })
+        })
+        test("400: Should respond with 400 bad request error code, when given an invalid search value", () => {
+            return request(app)
+            .get("/api/articles/banana")
+            .expect(400)
+            .then(({body}) => {
+            expect(body.msg).toBe('bad request')
+            })
+        })
+    })
 })
-
-// error: 
-// should return bad request when put in an invalid article id 
-// should return bad request when put in an invalid value for the article id i.e. banana 
-// should return bad request when 
 
 describe("GET /not-a-path", () => {
         test("404: responds with a 404 if path not found with an appropriate msg", () => {
