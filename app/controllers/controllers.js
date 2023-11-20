@@ -15,6 +15,12 @@ exports.getAllTopics = (req, res, next) => {
 }
 
 exports.getArticleById = (req, res, next) => { 
-    console.log("controller")
-    return selectArticleById()
+    const articleId = req.params.article_id
+    return selectArticleById(articleId).
+    then((result) => { 
+        res.status(200).send({article : result})
+    })
+    .catch((err) => { 
+        next(err)
+    })
 }

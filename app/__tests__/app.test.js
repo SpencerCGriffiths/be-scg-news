@@ -28,6 +28,33 @@ describe("GET /topics", () => {
     })
 })
 
+describe.only("GET /articles/:article_id", () => {
+    describe("-- functionality tests", () => {
+        test("200: Responds with a 200 status code, correct key value pairs and only one response object as the article id is unique", () => {
+            return request(app)
+            .get("/api/articles/3")
+            .expect(200)
+            .then(({body}) => {
+            expect(body.article).toMatchObject({
+                article_id: expect.any(Number), 
+                title: expect.any(String),
+                topic: expect.any(String),
+                author: expect.any(String),
+                body: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String)
+            })
+            expect(Object.keys(body).length).toBe(1)
+            })
+        })
+    })
+})
+
+// error: 
+// should return bad request when put in an invalid article id 
+// should return bad request when put in an invalid value for the article id i.e. banana 
+// should return bad request when 
 
 describe("GET /not-a-path", () => {
         test("404: responds with a 404 if path not found with an appropriate msg", () => {
@@ -39,4 +66,3 @@ describe("GET /not-a-path", () => {
             })
         })
 })
-
