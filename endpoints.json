@@ -38,5 +38,21 @@
         }
       ]
     }
+  }, 
+  "GET /api/articles/:article_id": {
+    "description": "requests on this path when given a valid article id will return the article with that article id",
+    "queries": [],
+    "exampleResponse": {
+      "article": {
+        "article_id": 3,
+        "title": "Eight pug gifs that remind me of mitch",
+        "topic": "mitch",
+        "author": "icellusedkars",
+        "body": "some gifs",
+        "created_at": "2020-11-03T09:12:00.000Z",
+        "votes": 0,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }
+    }
   }
 }

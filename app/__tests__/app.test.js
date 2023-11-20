@@ -28,55 +28,46 @@ describe("GET /topics", () => {
     })
 })
 
-describe("GET /api", () => {
+describe("GET /articles/:article_id", () => {
     describe("-- functionality tests", () => {
-        test("200: responds with 200 status code and a JSON object with description, queries and exampleResponse keys with correct data types", () => {
+        test("200: Responds with a 200 status code, correct key value pairs and only one response object as the article id is unique", () => {
             return request(app)
-            .get("/api")
+            .get("/api/articles/3")
             .expect(200)
             .then(({body}) => {
-                const endPointsObj = body.endpoints
-                for(let key in endPointsObj) { 
-                    expect(endPointsObj[key]).toMatchObject({
-                        description: expect.any(String), 
-                        queries: expect.any(Object),
-                        exampleResponse: expect.any(Object)
-                    })
-                }
-                
+            expect(body.article).toMatchObject({
+                article_id: 3, 
+                title: expect.any(String),
+                topic: expect.any(String),
+                author: expect.any(String),
+                body: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String)
+            })
+            expect(Object.keys(body).length).toBe(1)
             })
         })
-        test("200: responds with 200 status code and the queries key is a valid array, this array can be empty", () => {
+    })
+    describe("-- error tests", () => {
+        test("404: Should respond with 404 not found error code, when given an invalid numerical id", () => {
             return request(app)
-            .get("/api")
-            .expect(200)
+            .get("/api/articles/18")
+            .expect(404)
             .then(({body}) => {
-                const endPointsObj = body.endpoints
-                for(let key in endPointsObj) { 
-                    expect(Array.isArray(endPointsObj[key].queries)).toBe(true)
-                }                
+            expect(body.msg).toBe('no article found')
             })
         })
-        test("200: responds with 200 status code, an example response with the correct key value body response format containing at least one example response", () => {
+        test("400: Should respond with 400 bad request error code, when given an invalid search value", () => {
             return request(app)
-            .get("/api")
-            .expect(200)
+            .get("/api/articles/banana")
+            .expect(400)
             .then(({body}) => {
-                const endPointsObj = body.endpoints
-                for(let key in endPointsObj) { 
-                    const exampleResKey = endPointsObj[key].exampleResponse
-                    for (let key in exampleResKey) { 
-                        const resArray = exampleResKey[key]
-                        expect(typeof resArray[0]).toBe("object")
-                        expect(Object.keys(resArray[0]).length >= 1).toBe(true)
-                    }
-                }                
+            expect(body.msg).toBe('bad request')
             })
         })
     })
 })
-
-
 
 describe("GET /not-a-path", () => {
         test("404: responds with a 404 if path not found with an appropriate msg", () => {
@@ -87,4 +78,45 @@ describe("GET /not-a-path", () => {
                 expect(body.msg).toBe("path not found")
             })
         })
+})
+
+describe("GET /articles/:article_id", () => {
+    describe("-- functionality tests", () => {
+        test("200: Responds with a 200 status code, correct key value pairs and only one response object as the article id is unique", () => {
+            return request(app)
+            .get("/api/articles/3")
+            .expect(200)
+            .then(({body}) => {
+            expect(body.article).toMatchObject({
+                article_id: 3, 
+                title: expect.any(String),
+                topic: expect.any(String),
+                author: expect.any(String),
+                body: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String)
+            })
+            expect(Object.keys(body).length).toBe(1)
+            })
+        })
+    })
+    describe("-- error tests", () => {
+        test("404: Should respond with 404 not found error code, when given an invalid numerical id", () => {
+            return request(app)
+            .get("/api/articles/18")
+            .expect(404)
+            .then(({body}) => {
+            expect(body.msg).toBe('no article found')
+            })
+        })
+        test("400: Should respond with 400 bad request error code, when given an invalid search value", () => {
+            return request(app)
+            .get("/api/articles/banana")
+            .expect(400)
+            .then(({body}) => {
+            expect(body.msg).toBe('bad request')
+            })
+        })
+    })
 })
