@@ -99,7 +99,6 @@ describe("GET /api/articles", () => {
             .get("/api/articles")
             .expect(200)
             .then(({body}) => {
-                console.log(body.articles)
                 expect(body.articles).toBeSortedBy('created_at', {descending: true})
             })
         })
