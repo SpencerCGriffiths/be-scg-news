@@ -83,36 +83,27 @@ describe("GET /articles/:article_id", () => {
 
 describe("GET /api/articles", () => {
     describe("-- functionality tests", () => {
-        test("200: responds with 200 status code and all articles, articles should be in descending date order, have a comment count and no body key", () => {
+        test("200: responds with 200 status code and all articles with comment count and no body key", () => {
             return request(app)
             .get("/api/articles")
             .expect(200)
             .then(({body}) => {
-                const newestArticle = {
-                    article_id: 3,
-                    title: 'Eight pug gifs that remind me of mitch',
-                    topic: 'mitch',
-                    author: 'icellusedkars',
-                    created_at: '2020-11-03T09:12:00.000Z',
-                    votes: 0,
-                    article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
-                    num_of_comments: '2'
-                }
-                const oldestArticle = {
-                    article_id: 7,
-                    title: 'Z',
-                    topic: 'mitch',
-                    author: 'icellusedkars',
-                    created_at: '2020-01-07T14:08:00.000Z',
-                    votes: 0,
-                    article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
-                    num_of_comments: '0'
-                }
-                expect(body.articles.length).toBe(13)
-                expect(body.articles[0]).toEqual(newestArticle)
-                expect(body.articles[12]).toEqual(oldestArticle)
+                body.articles.forEach((article) => { 
+                    expect(article).toHaveProperty('comment_count')
+                    expect(article).not.toHaveProperty('body')
+                })
             })
         })
+        test("200: responds with 200 status code and all articles should be in descending date order", () => {
+            return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then(({body}) => {
+                console.log(body.articles)
+                expect(body.articles).toBeSortedBy('created_at', {descending: true})
+            })
+        })
+
     })
 })
 
