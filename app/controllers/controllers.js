@@ -31,3 +31,11 @@ exports.getAllEndpoints = (req, res, next) => {
         res.status(200).send({ endpoints : result })
     })
 } 
+
+exports.getCommentsById = () => { 
+    const articleId = req.params.article_id
+    return selectCommentsById(articleId)
+    .then((result) => { 
+        res.status(200).send({ comments : result})
+    })
+} 

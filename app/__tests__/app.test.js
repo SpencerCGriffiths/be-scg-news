@@ -135,3 +135,11 @@ describe("GET /api", () => {
         })
     })
 })
+
+
+describe("GET /api/articles/:article_id/comments", () => {
+    describe("-- functionality tests", () => {
+        test("200: responds with 200 status code, an array of comments for the relevant article id with the correct key value pairs", () => {
+        })
+    })
+})
