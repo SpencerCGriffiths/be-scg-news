@@ -56,5 +56,8 @@ exports.insertCommentByArticleId = (articleId, newComment) => {
         .then(({rows}) => { 
             return rows
         })
+        .catch(() => { 
+            return Promise.reject({status: 400, msg: "bad request"})
+        })
 }
 

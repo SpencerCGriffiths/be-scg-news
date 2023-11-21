@@ -46,5 +46,8 @@ exports.postCommentByArticleId = (req, res, next) => {
     .then((result) => { 
         res.status(201).send({ new_comment: result})
     })
+    .catch((err) => { 
+        next(err)
+    })
 }
 

@@ -145,5 +145,71 @@ describe("POST /api/articles/:article_id/comments", () => {
                 })
             })
         })
+        test('201: expect newComment to still be logged if user provides too many fields', () => {
+            const newComment = { 
+                username: "lurker", 
+                body: "This is a test comment",
+                OutOfTen: "10"
+            }
+            return request(app)
+            .post("/api/articles/5/comments")
+            .send(newComment)
+            .expect(201)
+            .then((response) => {
+                expect(response.body.new_comment[0]).toMatchObject({                
+                    comment_id: 19,
+                    body: 'This is a test comment',
+                    article_id: 5,
+                    author: 'lurker',
+                    votes: 0,
+                    created_at: expect.any(String)
+                })
+            })
+        })
     })
+//
+describe("-- Error Handling", () => {
+    test('400: error received as there is a missed criteria that is required for the inserting of data', () => {
+        const newComment = { 
+            username: "lurker", 
+        }
+        return request(app)
+        .post("/api/articles/5/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("bad request")
+        })
+    });
+
+    test('400: error received as the username referenced does not exist (no current user in data base)', () => {
+        const newComment = { 
+            username: "TestUser", 
+            body: "This is a test comment",
+        }
+        return request(app)
+        .post("/api/articles/5/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("bad request")
+        })
+    });
+
+    test('400: error received as the article number is incorrect and as such the comment is not posted', () => {
+        const newComment = { 
+            username: "lurker", 
+            body: "This is a test comment",
+        }
+        return request(app)
+        .post("/api/articles/19/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("bad request")
+        })
+    });
+    }); 
 })
+// miss a criterai 
+// post to an article that doesnt exist
