@@ -27,6 +27,7 @@ exports.selectArticleById = (articleId) => {
     })
 }
 
+
 exports.selectCommentsById = (articleId) => { 
     return db.query(`
     SELECT * 
@@ -45,6 +46,21 @@ exports.checkArticleExists = (articleId) => {
     .then((result) => { 
         if(result.rows.length === 0) { 
             return Promise.reject({status: 404, msg: "not found"})
-        } 
+        }
+}
+      
+exports.selectAllArticles = () => { 
+    return db.query(
+        `SELECT articles.*, COUNT(comments.comment_id) AS comment_count
+        FROM articles
+        LEFT JOIN comments ON comments.article_id = articles.article_id
+        GROUP BY articles.article_id
+        ORDER BY created_at DESC;`
+    ).then(({rows}) => { 
+        const result = rows.map((article) => { 
+            delete article.body
+            return article
+        })
+        return result
     })
 }
