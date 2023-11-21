@@ -26,3 +26,19 @@ exports.selectArticleById = (articleId) => {
         }
     })
 }
+
+exports.selectAllArticles = () => { 
+    return db.query(
+        `SELECT articles.*, COUNT(comments.comment_id) AS Num_Of_Comments
+        FROM articles
+        LEFT JOIN comments ON comments.article_id = articles.article_id
+        GROUP BY articles.article_id
+        ORDER BY created_at DESC;`
+    ).then(({rows}) => { 
+        const result = rows.map((article) => { 
+            delete article.body
+            return article
+        })
+        return result
+    })
+}
