@@ -187,3 +187,72 @@ describe("GET /api/articles/:article_id/comments", () => {
     })
 })
 
+describe("PATCH /api/articles/:article_id", () => {
+    describe("-- functionality tests", () => {
+        test("200: responds with 200 status code and updates the number of votes for the identified article", () => {
+            const updatedVotes = { 
+                inc_votes: 1
+            }
+            return request(app)
+            .patch("/api/articles/3")
+            .send(updatedVotes)
+            .expect(200)
+            .then(({body}) => {
+                expect(body.updatedArticle).toMatchObject({
+                    article_id: 3,
+                    title: 'Eight pug gifs that remind me of mitch',
+                    topic: 'mitch',
+                    author: 'icellusedkars',
+                    body: 'some gifs',
+                    created_at: '2020-11-03T09:12:00.000Z',
+                    votes: 1,
+                    article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+                })
+            })
+        })
+        test("200: votes can have large positive increments", () => {
+            const updatedVotes = { 
+                inc_votes: 200
+            }
+            return request(app)
+            .patch("/api/articles/3")
+            .send(updatedVotes)
+            .expect(200)
+            .then(({body}) => {
+                expect(body.updatedArticle).toMatchObject({
+                    article_id: 3,
+                    title: 'Eight pug gifs that remind me of mitch',
+                    topic: 'mitch',
+                    author: 'icellusedkars',
+                    body: 'some gifs',
+                    created_at: '2020-11-03T09:12:00.000Z',
+                    votes: 200,
+                    article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+                })
+            })
+        })
+        test("200: votes can be reduced from one of the articles", () => {
+            const updatedVotes = { 
+                inc_votes: -25
+            }
+            return request(app)
+            .patch("/api/articles/1")
+            .send(updatedVotes)
+            .expect(200)
+            .then(({body}) => {
+                console.log(body.updatedArticle)
+                expect(body.updatedArticle).toMatchObject({
+                    article_id: 1,
+                    title: 'Living in the shadow of a great man',
+                    topic: 'mitch',
+                    author: 'butter_bridge',
+                    body: 'I find this existence challenging',
+                    created_at: '2020-07-09T20:11:00.000Z',
+                    votes: 75,
+                    article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+                  })
+            })
+        })
+
+    })
+})
