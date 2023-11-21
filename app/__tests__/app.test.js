@@ -121,3 +121,29 @@ describe("GET /api", () => {
         })
     })
 })
+
+describe("POST /api/articles/:article_id/comments", () => {
+    describe("-- functionality tests", () => {
+        test("201: responds with 201 status code, takes a username and body and creates the comment with the relevant article id and key value pairs", () => {
+            
+            const newComment = { 
+                username: "lurker", 
+                body: "This is a test comment",
+            }
+            return request(app)
+            .post("/api/articles/5/comments")
+            .send(newComment)
+            .expect(201)
+            .then((result) => {
+                expect(result.body.new_comment[0]).toMatchObject({                
+                    comment_id: 19,
+                    body: 'This is a test comment',
+                    article_id: 5,
+                    author: 'lurker',
+                    votes: 0,
+                    created_at: expect.any(String)
+                })
+            })
+        })
+    })
+})
