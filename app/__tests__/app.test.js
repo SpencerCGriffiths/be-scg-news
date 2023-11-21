@@ -3,6 +3,7 @@ const app = require("../app")
 const db = require("../../db/connection")
 const data = require("../../db/data/test-data/index")
 const seed = require("../../db/seeds/seed")
+const endpointJsonFile = require("../../endpoints.json")
 
 beforeEach(() => {
     return seed(data);
@@ -117,6 +118,20 @@ describe("GET /articles/:article_id", () => {
             .then(({body}) => {
             expect(body.msg).toBe('bad request')
             })
+        })
+    })
+})
+
+describe("GET /api", () => {
+    describe("-- functionality tests", () => {
+        test("200: responds with 200 status code and the endpoints.json file and object", () => {
+            return request(app)
+            .get("/api")
+            .expect(200)
+            .then(({body}) => {
+                const endPointsObj = body.endpoints
+                expect(endPointsObj).toMatchObject(endpointJsonFile)
+                })
         })
     })
 })
