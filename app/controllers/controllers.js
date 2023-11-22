@@ -1,4 +1,4 @@
-const { selectAllTopics, retrieveJsonEndPoints, selectArticleById, selectAllArticles, insertCommentByArticleId  } = require("../models/models")
+const { selectAllTopics, retrieveJsonEndPoints, selectArticleById, selectAllArticles, insertCommentByArticleId, checkArticleExists  } = require("../models/models")
 
 exports.fourOhFour = (req, res, next) => {
     res.status(404).send({msg: "path not found"})
@@ -42,11 +42,15 @@ exports.getArticleById = (req, res, next) => {
 exports.postCommentByArticleId = (req, res, next) => { 
     const articleId = req.params.article_id
     const newComment = req.body
-    return insertCommentByArticleId(articleId, newComment)
+
+    const postPromises = [insertCommentByArticleId(articleId, newComment), checkArticleExists(articleId)]
+
+    Promise.all(postPromises)
     .then((result) => { 
         res.status(201).send({ new_comment: result})
     })
     .catch((err) => { 
+        console.log(err)
         next(err)
     })
 }

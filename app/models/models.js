@@ -54,10 +54,22 @@ exports.insertCommentByArticleId = (articleId, newComment) => {
         )
         RETURNING *;`, [body, articleId, username])
         .then(({rows}) => { 
-            return rows
+            return rows[0]
         })
         .catch(() => { 
             return Promise.reject({status: 400, msg: "bad request"})
         })
 }
 
+exports.checkArticleExists = (articleId) => { 
+    return db.query(`
+    SELECT *
+    FROM articles
+    WHERE article_id = $1`, [articleId])
+    .then(({rows}) => { 
+        if(rows.length === 0){ 
+            console.log(rows.length)
+            return Promise.reject({status: 404, msg: "not found"})
+        }
+    })
+}

@@ -196,7 +196,7 @@ describe("-- Error Handling", () => {
         })
     });
 
-    test('400: error received as the article number is incorrect and as such the comment is not posted', () => {
+    test.only('404: error received as the article number is incorrect and as such the comment is not posted', () => {
         const newComment = { 
             username: "lurker", 
             body: "This is a test comment",
@@ -208,8 +208,19 @@ describe("-- Error Handling", () => {
         .then(({body}) => {
             expect(body.msg).toBe("bad request")
         })
-    });
+    })
+    test('400: error received as the path to post the comment is incorrect (wrong value for article number)', () => {
+        const newComment = { 
+            username: "lurker", 
+            body: "This is a test comment",
+        }
+        return request(app)
+        .post("/api/articles/banana/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("bad request")
+        })
+    })
     }); 
 })
-// miss a criterai 
-// post to an article that doesnt exist
