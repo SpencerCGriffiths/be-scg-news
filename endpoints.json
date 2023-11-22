@@ -39,6 +39,18 @@
       ]
     }
   }, 
+  "GET /api/articles/:article_id/comments": { 
+    "description": "A get on this path will retrieve all the comments linked to a specific article id", 
+    "queries": [], 
+    "exampleResponse": {
+      "comment_id": 19,
+      "body": "This is a test comment",
+      "article_id": 5,
+      "author": "lurker",
+      "votes": 0,
+      "created_at": "2023-11-22T11:18:38.690Z"
+    }
+  },
   "GET /api/articles/:article_id": {
     "description": "requests on this path when given a valid article id will return the article with that article id",
     "queries": [],

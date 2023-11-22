@@ -27,29 +27,6 @@ exports.selectArticleById = (articleId) => {
     })
 }
 
-
-exports.selectCommentsById = (articleId) => { 
-    return db.query(`
-    SELECT * 
-    FROM comments
-    WHERE article_id = $1
-    ORDER BY created_at DESC`, [articleId])
-    .then(({rows})=> {
-        return rows
-    })
-}
-
-exports.checkArticleExists = (articleId) => { 
-    return db.query(`SELECT *
-    FROM articles
-    WHERE article_id = $1;`, [articleId])
-    .then((result) => { 
-        if(result.rows.length === 0) { 
-            return Promise.reject({status: 404, msg: "not found"})
-        }
- }) 
-} 
-      
 exports.selectAllArticles = () => { 
     return db.query(
         `SELECT articles.*, COUNT(comments.comment_id) AS comment_count
@@ -66,18 +43,7 @@ exports.selectAllArticles = () => {
     })
 }
 
-
-exports.updateArticleVotes = (articleId, incVotes) => { 
-    return db.query(`
-    UPDATE articles
-    SET votes = votes + $1
-    WHERE article_id = $2
-    RETURNING *;`, [incVotes, articleId])
-    .then((result) => { 
-       return result.rows[0]
-
-      
- exports.insertCommentByArticleId = (articleId, newComment) => { 
+exports.insertCommentByArticleId = (articleId, newComment) => { 
     const {username, body} = newComment
     return db.query(`
     INSERT INTO comments (body, article_id, author)
@@ -104,5 +70,28 @@ exports.checkArticleExists = (articleId) => {
         if(rows.length === 0){ 
             return Promise.reject({status: 404, msg: "not found"})
         }
+    })
+}
+
+exports.selectCommentsById = (articleId) => { 
+    return db.query(`
+    SELECT * 
+    FROM comments
+    WHERE article_id = $1
+    ORDER BY created_at DESC`, [articleId])
+    .then(({rows})=> {
+        return rows
+    })
+}
+
+
+exports.updateArticleVotes = (articleId, incVotes) => { 
+    return db.query(`
+    UPDATE articles
+    SET votes = votes + $1
+    WHERE article_id = $2
+    RETURNING *;`, [incVotes, articleId])
+    .then((result) => { 
+       return result.rows[0]
     })
 }

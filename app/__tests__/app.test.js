@@ -12,6 +12,7 @@ afterAll(() => {
     return db.end();
 })
 
+
 describe("GET /topics", () => {
     describe("-- functionality tests", () => {
         test("200: responds with a 200 status code and an array of length 3 with topic objects with appropriate key value pairs", () => {
@@ -135,7 +136,6 @@ describe("POST /api/articles/:article_id/comments", () => {
             .send(newComment)
             .expect(201)
             .then((result) => {
-
                 expect(result.body.new_comment).toMatchObject({                
                     comment_id: 19,
                     body: 'This is a test comment',
