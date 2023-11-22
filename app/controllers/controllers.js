@@ -1,5 +1,5 @@
 
-const { selectAllTopics, retrieveJsonEndPoints, selectArticleById, selectAllArticles, selectCommentsById, checkArticleExists, insertCommentByArticleId, updateArticleVotes } = require("../models/models")
+const { selectAllTopics, retrieveJsonEndPoints, selectArticleById, selectAllArticles, selectCommentsById, checkArticleExists, insertCommentByArticleId, updateArticleVotes, selectAllUsers } = require("../models/models")
 
 exports.fourOhFour = (req, res, next) => {
     res.status(404).send({msg: "path not found"})
@@ -87,6 +87,16 @@ exports.patchArticleVotes = (req, res, next) => {
     Promise.all(patchPromises)
     .then((result) => { 
         res.status(200).send({ updatedArticle: result[0]})
+    })
+    .catch((err) => { 
+        next(err)
+    })
+}
+
+exports.getAllUsers = (req, res, next) => { 
+    return selectAllUsers()
+    .then((result) => { 
+        res.status(200).send({users: result})
     })
     .catch((err) => { 
         next(err)

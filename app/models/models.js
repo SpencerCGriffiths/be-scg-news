@@ -1,3 +1,4 @@
+const e = require("express")
 const db = require("../../db/connection")
 const fs = require("fs/promises")
 
@@ -93,5 +94,14 @@ exports.updateArticleVotes = (articleId, incVotes) => {
     RETURNING *;`, [incVotes, articleId])
     .then((result) => { 
        return result.rows[0]
+    })
+}
+
+exports.selectAllUsers = () => { 
+    return db.query(`
+    SELECT *
+    FROM users;`)
+    .then(({rows}) => { 
+        return rows
     })
 }
