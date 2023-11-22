@@ -231,7 +231,7 @@ describe("PATCH /api/articles/:article_id", () => {
                 })
             })
         })
-        test("200: votes can be reduced from one of the articles", () => {
+        test("200: votes can be reduced from any specified article", () => {
             const updatedVotes = { 
                 inc_votes: -25
             }
@@ -240,7 +240,6 @@ describe("PATCH /api/articles/:article_id", () => {
             .send(updatedVotes)
             .expect(200)
             .then(({body}) => {
-                console.log(body.updatedArticle)
                 expect(body.updatedArticle).toMatchObject({
                     article_id: 1,
                     title: 'Living in the shadow of a great man',
@@ -253,6 +252,86 @@ describe("PATCH /api/articles/:article_id", () => {
                   })
             })
         })
+        test("200: quantity of votes can be a negative if downvoted below 0", () => {
+            const updatedVotes = { 
+                inc_votes: -10
+            }
+            return request(app)
+            .patch("/api/articles/3")
+            .send(updatedVotes)
+            .expect(200)
+            .then(({body}) => {
+                expect(body.updatedArticle).toMatchObject({
+                    article_id: 3,
+                    title: 'Eight pug gifs that remind me of mitch',
+                    topic: 'mitch',
+                    author: 'icellusedkars',
+                    body: 'some gifs',
+                    created_at: '2020-11-03T09:12:00.000Z',
+                    votes: -10,
+                    article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+                })
+            })
+        })
+        test("200: if more fields are provided these will be ignored and the patch will still take place", () => {
+            const updatedVotes = { 
+                inc_votes: 1, 
+                author: "simon", 
+                article_id: 6
+            }
+            return request(app)
+            .patch("/api/articles/3")
+            .send(updatedVotes)
+            .expect(200)
+            .then(({body}) => {
+                expect(body.updatedArticle).toMatchObject({
+                    article_id: 3,
+                    title: 'Eight pug gifs that remind me of mitch',
+                    topic: 'mitch',
+                    author: 'icellusedkars',
+                    body: 'some gifs',
+                    created_at: '2020-11-03T09:12:00.000Z',
+                    votes: 1,
+                    article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+                })
+            })
+        }) 
+    })
+    describe("-- error tests", () => {
+        test("400: error received as there is a missed criteria required for inserting data", () => {
+            const updatedVotes = { 
+            }
+            return request(app)
+            .patch("/api/articles/3")
+            .send(updatedVotes)
+            .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("bad request")
+            })
+        })
+        test("400: responds with error when given the wrong data type in the input object", () => {
+            const updatedVotes = { 
+                inc_votes: "one"
+            }
+            return request(app)
+            .patch("/api/articles/3")
+            .send(updatedVotes)
+            .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("bad request")
+            })
+        })
+        test("404: error received as article you are updating does not exist", () => {
+            const updatedVotes = { 
+            }
+            return request(app)
+            .patch("/api/articles/19")
+            .send(updatedVotes)
+            .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe("not found")
+            })
+        })
 
     })
-})
+}) 

@@ -65,8 +65,14 @@ exports.getCommentsById = (req, res, next) => {
 exports.patchArticleVotes = (req, res, next) => { 
     const articleId = req.params.article_id
     const incVotes = req.body.inc_votes
-    return updateArticleVotes(articleId, incVotes)
+
+    const patchPromises = [updateArticleVotes(articleId, incVotes), checkArticleExists(articleId)]
+
+    Promise.all(patchPromises)
     .then((result) => { 
         res.status(200).send({ updatedArticle: result[0]})
+    })
+    .catch((err) => { 
+        next(err)
     })
 }

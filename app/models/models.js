@@ -73,6 +73,6 @@ exports.updateArticleVotes = (articleId, incVotes) => {
     WHERE article_id = $2
     RETURNING *;`, [incVotes, articleId])
     .then((result) => { 
-       return result.rows
+       return result.rows[0]
     })
 }
