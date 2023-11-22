@@ -64,3 +64,33 @@ exports.selectAllArticles = () => {
         return result
     })
 }
+
+exports.insertCommentByArticleId = (articleId, newComment) => { 
+    const {username, body} = newComment
+    return db.query(`
+    INSERT INTO comments (body, article_id, author)
+        VALUES (
+            $1,
+            (SELECT article_id FROM articles WHERE article_id = $2),
+            (SELECT username FROM users WHERE username = $3)
+        )
+        RETURNING *;`, [body, articleId, username])
+        .then(({rows}) => { 
+            return rows[0]
+        })
+        .catch(() => { 
+            return Promise.reject({status: 400, msg: "bad request"})
+        })
+}
+
+exports.checkArticleExists = (articleId) => { 
+    return db.query(`
+    SELECT *
+    FROM articles
+    WHERE article_id = $1`, [articleId])
+    .then(({rows}) => { 
+        if(rows.length === 0){ 
+            return Promise.reject({status: 404, msg: "not found"})
+        }
+    })
+}
