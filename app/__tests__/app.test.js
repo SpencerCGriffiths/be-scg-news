@@ -135,7 +135,8 @@ describe("POST /api/articles/:article_id/comments", () => {
             .send(newComment)
             .expect(201)
             .then((result) => {
-                expect(result.body.new_comment[0]).toMatchObject({                
+
+                expect(result.body.new_comment).toMatchObject({                
                     comment_id: 19,
                     body: 'This is a test comment',
                     article_id: 5,
@@ -156,7 +157,7 @@ describe("POST /api/articles/:article_id/comments", () => {
             .send(newComment)
             .expect(201)
             .then((response) => {
-                expect(response.body.new_comment[0]).toMatchObject({                
+                expect(response.body.new_comment).toMatchObject({                
                     comment_id: 19,
                     body: 'This is a test comment',
                     article_id: 5,
@@ -196,7 +197,7 @@ describe("-- Error Handling", () => {
         })
     });
 
-    test.only('404: error received as the article number is incorrect and as such the comment is not posted', () => {
+    test('404: error received as the article number is incorrect and as such the comment is not posted', () => {
         const newComment = { 
             username: "lurker", 
             body: "This is a test comment",
@@ -204,9 +205,9 @@ describe("-- Error Handling", () => {
         return request(app)
         .post("/api/articles/19/comments")
         .send(newComment)
-        .expect(400)
+        .expect(404)
         .then(({body}) => {
-            expect(body.msg).toBe("bad request")
+            expect(body.msg).toBe("not found")
         })
     })
     test('400: error received as the path to post the comment is incorrect (wrong value for article number)', () => {
