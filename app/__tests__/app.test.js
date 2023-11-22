@@ -453,6 +453,7 @@ describe("PATCH /api/articles/:article_id", () => {
 }) 
 
 describe("DELETE /api/comments/:comment_id", () => {
+    describe("-- functionality testing", () => {
     test("200: responds with a 200 status and the deleted comment with the comment id", () => {
         return request(app)
         .delete("/api/comments/1")
@@ -479,5 +480,24 @@ describe("DELETE /api/comments/:comment_id", () => {
                 expect(commentCountAfterDeletion).toBe("17");
             });
         })
+    })
+    })
+    describe("-- error testing", () => {
+    test("404: responds with 404 not found when trying to delete a comment with comment id that does not exist", () => {
+        return request(app)
+        .delete("/api/comments/25")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe("not found")
+        })
+    })
+    test("400: responds with 400 bad request when trying to delete a comment with the wrong path i.e. /banana", () => {
+        return request(app)
+        .delete("/api/comments/banana")
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("bad request")
+        })
+    })
     })
 })

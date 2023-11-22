@@ -102,6 +102,10 @@ exports.deleteComment = (commentId) => {
         WHERE comment_id = $1
         RETURNING *;`, [commentId])
     .then(({rows}) =>{ 
-        return rows
+        if(rows.length === 0) { 
+        return Promise.reject({status: 404, msg: "not found"})
+        } else { 
+            return rows
+          }
     })
 }
