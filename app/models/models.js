@@ -47,7 +47,8 @@ exports.checkArticleExists = (articleId) => {
         if(result.rows.length === 0) { 
             return Promise.reject({status: 404, msg: "not found"})
         }
-}
+ }) 
+} 
       
 exports.selectAllArticles = () => { 
     return db.query(
@@ -65,7 +66,18 @@ exports.selectAllArticles = () => {
     })
 }
 
-exports.insertCommentByArticleId = (articleId, newComment) => { 
+
+exports.updateArticleVotes = (articleId, incVotes) => { 
+    return db.query(`
+    UPDATE articles
+    SET votes = votes + $1
+    WHERE article_id = $2
+    RETURNING *;`, [incVotes, articleId])
+    .then((result) => { 
+       return result.rows[0]
+
+      
+ exports.insertCommentByArticleId = (articleId, newComment) => { 
     const {username, body} = newComment
     return db.query(`
     INSERT INTO comments (body, article_id, author)
