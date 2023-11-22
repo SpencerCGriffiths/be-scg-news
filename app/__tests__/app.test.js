@@ -168,7 +168,8 @@ describe("POST /api/articles/:article_id/comments", () => {
             })
         })
     })
-//
+
+  
 describe("-- Error Handling", () => {
     test('400: error received as there is a missed criteria that is required for the inserting of data', () => {
         const newComment = { 
@@ -224,4 +225,69 @@ describe("-- Error Handling", () => {
         })
     })
     }); 
+})
+
+
+describe("GET /api/articles/:article_id/comments", () => {
+    describe("-- functionality tests", () => {
+        test("200: should respond with 200 and request should return an array", () => {
+            return request(app)
+            .get("/api/articles/3/comments")
+            .expect(200)
+            .then(({body}) => {
+                expect(Array.isArray(body.comments)).toBe(true)
+                })
+        })
+        test("200: Array of comments should be for the relevant article id and have additional correct key value pairs", () => {
+            return request(app)
+            .get("/api/articles/3/comments")
+            .expect(200)
+            .then(({body}) => {
+                body.comments.forEach((comment) => { 
+                    expect(comment).toMatchObject({
+                        comment_id: expect.any(Number),
+                        body: expect.any(String),
+                        article_id: 3,
+                        author: expect.any(String),
+                        votes: expect.any(Number),
+                        created_at: expect.any(String)
+                })
+                })
+            })
+        })
+        test("200:array of comments should be ordered by most recent comment first", () => {
+            return request(app)
+            .get("/api/articles/3/comments")
+            .expect(200)
+            .then(({body}) => {
+                expect(body.comments).toBeSortedBy("created_at",{descending: true})
+                })
+            })
+        });
+    describe("-- error handling", () => {
+        test("404: should respond with error message when the article doesn't exist", () => {
+            return request(app)
+            .get("/api/articles/21/comments")
+            .expect(404)
+            .then(({body}) => {
+                expect(body.msg).toBe("not found")
+                })
+        })
+        test("200: should respond with 200 and an empty array if article id does exist but there are no comments", () => {
+            return request(app)
+            .get("/api/articles/2/comments")
+            .expect(200)
+            .then(({body}) => {
+                expect(body.comments).toEqual([]) 
+                })
+        })
+        test("400: should respond with 400 and error message when inputing the range value type for article id", () => {
+            return request(app)
+            .get("/api/articles/banana/comments")
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe("bad request") 
+                })
+        })
+    })
 })

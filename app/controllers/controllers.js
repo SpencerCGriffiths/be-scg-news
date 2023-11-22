@@ -1,4 +1,6 @@
-const { selectAllTopics, retrieveJsonEndPoints, selectArticleById, selectAllArticles, insertCommentByArticleId, checkArticleExists  } = require("../models/models")
+
+
+const { selectAllTopics, retrieveJsonEndPoints, selectArticleById, selectAllArticles, selectCommentsById, checkArticleExists, insertCommentByArticleId } = require("../models/models")
 
 exports.fourOhFour = (req, res, next) => {
     res.status(404).send({msg: "path not found"})
@@ -39,6 +41,7 @@ exports.getArticleById = (req, res, next) => {
     })
 }
 
+
 exports.postCommentByArticleId = (req, res, next) => { 
     const articleId = req.params.article_id
     const newComment = req.body
@@ -54,3 +57,24 @@ exports.postCommentByArticleId = (req, res, next) => {
         next(err)
     })
 }
+
+exports.getAllEndpoints = (req, res, next) => { 
+    return retrieveJsonEndPoints()
+    .then((result) => { 
+        res.status(200).send({ endpoints : result })
+    })
+} 
+
+exports.getCommentsById = (req, res, next) => { 
+    const articleId = req.params.article_id
+
+    const commentPromises = [selectCommentsById(articleId), checkArticleExists(articleId)]
+
+    Promise.all(commentPromises)
+    .then((result) => { 
+        const commentById = result[0]
+        res.status(200).send({ comments : commentById})
+    }).catch((err) => { 
+        next(err)
+    })
+} 
