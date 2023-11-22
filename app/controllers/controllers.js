@@ -1,5 +1,4 @@
 
-
 const { selectAllTopics, retrieveJsonEndPoints, selectArticleById, selectAllArticles, selectCommentsById, checkArticleExists, insertCommentByArticleId, updateArticleVotes } = require("../models/models")
 
 exports.fourOhFour = (req, res, next) => {
