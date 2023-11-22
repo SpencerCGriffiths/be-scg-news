@@ -332,6 +332,17 @@ describe("PATCH /api/articles/:article_id", () => {
             expect(body.msg).toBe("not found")
             })
         })
+        test("400: error received as the path for the patch request is invalid, i.e. article/banana", () => {
+            const updatedVotes = { 
+            }
+            return request(app)
+            .patch("/api/articles/banana")
+            .send(updatedVotes)
+            .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("bad request")
+            })
+        })
 
     })
 }) 
