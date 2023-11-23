@@ -1,5 +1,5 @@
 
-const { selectAllTopics, retrieveJsonEndPoints, selectArticleById, selectAllArticles, selectCommentsById, checkArticleExists, insertCommentByArticleId, updateArticleVotes } = require("../models/models")
+const { selectAllTopics, retrieveJsonEndPoints, selectArticleById, selectAllArticles, selectCommentsById, checkArticleExists, insertCommentByArticleId, updateArticleVotes, deleteComment } = require("../models/models")
 
 exports.fourOhFour = (req, res, next) => {
     res.status(404).send({msg: "path not found"})
@@ -89,6 +89,18 @@ exports.patchArticleVotes = (req, res, next) => {
         res.status(200).send({ updatedArticle: result[0]})
     })
     .catch((err) => { 
+        next(err)
+    })
+}
+
+exports.removeComment = (req, res, next) => { 
+    const commentId = req.params.comment_id
+
+    return deleteComment(commentId)
+    .then((result) => { 
+        res.status(200).send({deleted_comment : result})
+    })
+    .catch((err) => {
         next(err)
     })
 }
