@@ -80,6 +80,16 @@ describe("GET /articles/:article_id", () => {
             })
         })
     })
+    describe("-- functionality tests", () => {
+        test("200: Should respond with 200 and  bad request error code, when given an invalid search value(not complete)", () => {
+            return request(app)
+            .get("/api/articles/3?comment_count")
+            .expect(200)
+            .then(() => {
+            expect().toBe()
+            })
+        })
+    })
 })
 
 describe("GET /api/articles", () => {
