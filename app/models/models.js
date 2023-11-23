@@ -13,11 +13,22 @@ exports.retrieveJsonEndPoints = () => {
     })
 }
 
-exports.selectArticleById = (articleId) => { 
-    return db.query(`
-    SELECT *
-    FROM articles
-    WHERE article_id = $1`, [articleId])
+exports.selectArticleById = (articleId, query) => { 
+    let queryStr = ``
+    let queryVal = []
+    if(query.hasOwnProperty("comment_count")) { 
+        queryStr += `SELECT articles.*, COUNT(comments.comment_id) AS comment_count
+        FROM articles
+        LEFT JOIN comments ON comments.article_id = articles.article_id `
+    } else { 
+        queryStr += `SELECT * FROM articles `
+    }
+    if(articleId) { 
+        queryStr += `WHERE articles.article_id = $1
+        GROUP BY articles.article_id`
+        queryVal.push(articleId)
+    }
+    return db.query(queryStr, queryVal)
     .then(({rows}) => {
         if (rows.length === 0) { 
             return Promise.reject({status: 404, msg: "no article found"})
@@ -94,4 +105,8 @@ exports.updateArticleVotes = (articleId, incVotes) => {
     .then((result) => { 
        return result.rows[0]
     })
+}
+
+exports.artByIdWithCommentCount = (articleId, query) => { 
+    return db.query()
 }

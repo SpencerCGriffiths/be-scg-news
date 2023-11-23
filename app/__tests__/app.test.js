@@ -80,13 +80,40 @@ describe("GET /articles/:article_id", () => {
             })
         })
     })
-    describe("-- functionality tests", () => {
-        test("200: Should respond with 200 and  bad request error code, when given an invalid search value(not complete)", () => {
+    describe("-- Query---- comment_count ---functionality tests", () => {
+        test("200: Should respond with 200, the article object with correct key value pairs and key comment_count with total count of comments for this article_id", () => {
             return request(app)
             .get("/api/articles/3?comment_count")
             .expect(200)
-            .then(() => {
-            expect().toBe()
+            .then(({body}) => {
+            expect(body.article).toMatchObject({
+                article_id: 3, 
+                title: expect.any(String),
+                topic: expect.any(String),
+                author: expect.any(String),
+                body: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+                comment_count: "2"
+            })
+            expect(Object.keys(body).length).toBe(1)
+            })
+        })
+        test("404: Should respond with 404, if the article doesn't exist", () => {
+            return request(app)
+            .get("/api/articles/20?comment_count")
+            .expect(404)
+            .then(({body}) => {
+            expect(body.msg).toBe("no article found")
+            })
+         })
+        test("400: Should respond with 400 bad request error code, when given an invalid search value", () => {
+            return request(app)
+            .get("/api/articles/banana?comment_count")
+            .expect(400)
+            .then(({body}) => {
+            expect(body.msg).toBe('bad request')
             })
         })
     })
