@@ -112,10 +112,10 @@ describe("GET /api/articles", () => {
             .get("/api/articles?topic=mitch")
             .expect(200)
             .then(({body}) => {
-                body.articles_by_topic.map((article) => { 
+                body.articles.map((article) => { 
                     expect(article.topic).toBe('mitch')
                 })
-                expect(body.articles_by_topic.length).toBe(12)
+                expect(body.articles.length).toBe(12)
             })
         })
         test("200: responds with 200 status code and an empty object when searching for a topic that has no articles i.e. 'paper'", () => {
@@ -123,8 +123,8 @@ describe("GET /api/articles", () => {
             .get("/api/articles?topic=paper")
             .expect(200)
             .then(({body}) => {
-                expect(body.articles_by_topic).toEqual([])
-                expect(body.articles_by_topic.length).toBe(0)
+                expect(body.articles).toEqual([])
+                expect(body.articles.length).toBe(0)
             })
         })
     describe("-- query tests- filter by topic -- error", () => {

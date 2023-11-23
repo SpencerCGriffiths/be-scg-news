@@ -23,25 +23,18 @@ exports.getAllEndpoints = (req, res, next) => {
 } 
 
 exports.getAllArticles = (req, res, next) => {
-    if(Object.keys(req.query).length) {
-        const topic = req.query.topic
-        const artTopicPromises = [selectArticlesByTopic(topic), checkTopicExists(topic)]
-        return Promise.all(artTopicPromises) 
-        .then((result) => { 
-            res.status(200).send({ articles_by_topic : result[0]})
-        })
-        .catch((err) => { 
-            next(err)
-        })
-    } else { 
-        return selectAllArticles()
-        .then((result) => { 
-            res.status(200).send({ articles: result})
-        })
-        .catch((err) => { 
-            next(err)
-        })
-    }
+    const query = req.query
+    let promises = []
+    promises = [selectAllArticles(query)]
+    if (query.topic) promises = [selectAllArticles(query), checkTopicExists(query.topic)]
+    return Promise.all(promises) 
+    .then((result) => { 
+        let final = result[0]
+        res.status(200).send({ articles: final})
+    })
+    .catch((err) => { 
+        next(err)
+    }) 
 } 
 
 exports.getArticleById = (req, res, next) => { 

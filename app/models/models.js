@@ -30,14 +30,22 @@ exports.selectArticleById = (articleId) => {
     })
 }
 
-exports.selectAllArticles = () => { 
-    return db.query(
-        `SELECT articles.*, COUNT(comments.comment_id) AS comment_count
-        FROM articles
-        LEFT JOIN comments ON comments.article_id = articles.article_id
-        GROUP BY articles.article_id
-        ORDER BY created_at DESC;`
-    ).then(({rows}) => { 
+exports.selectAllArticles = (query) => { 
+    let queryStr = `SELECT articles.*, COUNT(comments.comment_id) AS comment_count
+    FROM articles
+    LEFT JOIN comments ON comments.article_id = articles.article_id `
+    let queryVals = [] 
+
+    if(query.topic) { 
+            queryStr += `WHERE articles.topic = $1 `  
+            queryVals.push(query.topic)      
+        }
+
+    queryStr += `GROUP BY articles.article_id
+    ORDER BY created_at DESC;`
+
+    return db.query(queryStr, queryVals)
+    .then(({rows}) => { 
         const result = rows.map((article) => { 
             delete article.body
             return article
@@ -119,17 +127,7 @@ exports.selectAllUsers = () => {
     })
 }
 
-exports.checkTopicExists = (topic) => { 
-    return db.query(`
-    SELECT * 
-    FROM topics
-    WHERE slug = $1`, [topic])
-    .then(({rows}) => { 
-        if(rows.length === 0){ 
-            return Promise.reject({status: 404, msg: "topic not found"})
-        }
-   })
-}
+
 
 exports.deleteComment = (commentId) => { 
     return db.query(
@@ -143,4 +141,16 @@ exports.deleteComment = (commentId) => {
             return rows[0]
           }
     })
+}
+
+exports.checkTopicExists = (topic) => { 
+    return db.query(`
+    SELECT * 
+    FROM topics
+    WHERE slug = $1`, [topic])
+    .then(({rows}) => { 
+        if(rows.length === 0){ 
+            return Promise.reject({status: 404, msg: "topic not found"})
+        }
+   })
 }
