@@ -43,7 +43,7 @@ describe("GET /not-a-path", () => {
 
 describe("GET /articles/:article_id", () => {
     describe("-- functionality tests", () => {
-        test("200: Responds with a 200 status code, correct key value pairs and only one response object as the article id is unique", () => {
+        test("200: Responds with a 200 status code, correct key value pairs including comment count and only one response object as the article id is unique", () => {
             return request(app)
             .get("/api/articles/3")
             .expect(200)
@@ -56,7 +56,8 @@ describe("GET /articles/:article_id", () => {
                 body: expect.any(String),
                 created_at: expect.any(String),
                 votes: expect.any(Number),
-                article_img_url: expect.any(String)
+                article_img_url: expect.any(String),
+                comment_count: "2"
             })
             expect(Object.keys(body).length).toBe(1)
             })
