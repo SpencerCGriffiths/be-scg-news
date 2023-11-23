@@ -105,9 +105,40 @@ describe("GET /api/articles", () => {
                 expect(body.articles).toBeSortedBy('created_at', {descending: true})
             })
         })
-
     })
-})
+    describe("-- query tests- filter by topic", () => {
+        test("200: responds with 200 status code and the articles filtered by the topic query value i.e. 'mitch'", () => {
+            return request(app)
+            .get("/api/articles?topic=mitch")
+            .expect(200)
+            .then(({body}) => {
+                body.articles_by_topic.map((article) => { 
+                    expect(article.topic).toBe('mitch')
+                })
+                expect(body.articles_by_topic.length).toBe(12)
+            })
+        })
+        test("200: responds with 200 status code and an empty object when searching for a topic that has no articles i.e. 'paper'", () => {
+            return request(app)
+            .get("/api/articles?topic=paper")
+            .expect(200)
+            .then(({body}) => {
+                expect(body.articles_by_topic).toEqual([])
+                expect(body.articles_by_topic.length).toBe(0)
+            })
+        })
+    describe("-- query tests- filter by topic -- error", () => {
+        test("404: responds with topic not found if trying to search by a non existant topic", () => {
+            return request(app)
+            .get("/api/articles?topic=trees")
+            .expect(404)
+            .then(({body}) => {
+             expect(body.msg).toBe('topic not found')
+                })
+            })
+        })
+    })
+}) 
 
 
 describe("GET /api", () => {
@@ -452,3 +483,76 @@ describe("PATCH /api/articles/:article_id", () => {
 
     })
 }) 
+
+
+describe("GET /api/users", () => {
+    describe("-- functionality tests", () => {
+        test("200: responds with 200 status code, and an array of all user objects with key value pair", () => {
+        return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({body}) => { 
+            const userArr = body.users
+            userArr.forEach((user) => { 
+                expect(user).toMatchObject({
+                    username: expect.any(String), 
+                    name: expect.any(String),
+                    avatar_url: expect.any(String)
+                })
+            })
+            expect(userArr.length).toBe(4)
+        })
+        }) 
+    })
+});     
+
+
+describe("DELETE /api/comments/:comment_id", () => {
+    describe("-- functionality testing", () => {
+    test("200: responds with a 200 status and the deleted comment with the comment id", () => {
+        return request(app)
+        .delete("/api/comments/1")
+        .expect(200)
+        .then(({body}) => {
+            expect(body.deleted_comment).toMatchObject({
+                    comment_id: 1,
+                    body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+                    article_id: 9,
+                    author: 'butter_bridge',
+                    votes: 16,
+                    created_at: '2020-04-06T12:17:00.000Z'
+            })
+        })
+    })
+    test("200: responds with a 200 status and the resulting data set should be reduced by one comment (length -1)", () => {
+        return request(app)
+        .delete("/api/comments/1")
+        .expect(200)
+        .then(() => {
+            return db.query(`SELECT COUNT(*) AS comment_count FROM comments;`)
+            .then((result) => {
+                const commentCountAfterDeletion = result.rows[0].comment_count;
+                expect(commentCountAfterDeletion).toBe("17");
+            });
+        })
+    })
+    })
+    describe("-- error testing", () => {
+    test("404: responds with 404 not found when trying to delete a comment with comment id that does not exist", () => {
+        return request(app)
+        .delete("/api/comments/25")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe("not found")
+        })
+    })
+    test("400: responds with 400 bad request when trying to delete a comment with the wrong path i.e. /banana", () => {
+        return request(app)
+        .delete("/api/comments/banana")
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("bad request")
+        })
+    })
+    })
+})
