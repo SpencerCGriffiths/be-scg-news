@@ -37,7 +37,11 @@
           "comment_count": 6
         }
       ]
-    }
+    },
+    "topicQuery": {
+      "examplePath": "/api/articles?topic=something", 
+      "description": "provides an array of all articles with the set topic"
+    }  
   }, 
   "GET /api/articles/:article_id/comments": { 
     "description": "A get on this path will retrieve all the comments linked to a specific article id", 

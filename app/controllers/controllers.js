@@ -1,5 +1,5 @@
 
-const { selectAllTopics, retrieveJsonEndPoints, selectArticleById, selectAllArticles, selectCommentsById, checkArticleExists, insertCommentByArticleId, updateArticleVotes, deleteComment, selectAllUsers } = require("../models/models")
+const { selectAllTopics, retrieveJsonEndPoints, selectArticleById, selectAllArticles, selectCommentsById, checkArticleExists, insertCommentByArticleId, updateArticleVotes, deleteComment, selectAllUsers, selectArticlesByTopic, checkTopicExists } = require("../models/models")
 
 exports.fourOhFour = (req, res, next) => {
     res.status(404).send({msg: "path not found"})
@@ -22,11 +22,26 @@ exports.getAllEndpoints = (req, res, next) => {
     })
 } 
 
-exports.getAllArticles = (req, res, next) => { 
-    return selectAllArticles()
-    .then((result) => { 
-        res.status(200).send({ articles: result})
-    })
+exports.getAllArticles = (req, res, next) => {
+    if(Object.keys(req.query).length) {
+        const topic = req.query.topic
+        const artTopicPromises = [selectArticlesByTopic(topic), checkTopicExists(topic)]
+        return Promise.all(artTopicPromises) 
+        .then((result) => { 
+            res.status(200).send({ articles_by_topic : result[0]})
+        })
+        .catch((err) => { 
+            next(err)
+        })
+    } else { 
+        return selectAllArticles()
+        .then((result) => { 
+            res.status(200).send({ articles: result})
+        })
+        .catch((err) => { 
+            next(err)
+        })
+    }
 } 
 
 exports.getArticleById = (req, res, next) => { 

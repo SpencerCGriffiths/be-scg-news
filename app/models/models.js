@@ -97,6 +97,16 @@ exports.updateArticleVotes = (articleId, incVotes) => {
     })
 }
 
+exports.selectArticlesByTopic = (topic) => { 
+    return db.query(`
+    SELECT *
+    FROM articles
+    WHERE topic = $1`, [topic])    
+    .then(({rows}) => { 
+        return rows
+    })
+}
+
 exports.selectAllUsers = () => { 
     return db.query(`
     SELECT *
@@ -104,6 +114,18 @@ exports.selectAllUsers = () => {
     .then(({rows}) => { 
         return rows
     })
+}
+
+exports.checkTopicExists = (topic) => { 
+    return db.query(`
+    SELECT * 
+    FROM topics
+    WHERE slug = $1`, [topic])
+    .then(({rows}) => { 
+        if(rows.length === 0){ 
+            return Promise.reject({status: 404, msg: "topic not found"})
+        }
+   })
 }
 
 exports.deleteComment = (commentId) => { 
