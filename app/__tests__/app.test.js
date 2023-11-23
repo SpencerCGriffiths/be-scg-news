@@ -117,8 +117,27 @@ describe("GET /api/articles", () => {
                 expect(body.articles_by_topic.length).toBe(12)
             })
         })
-    }) 
-})
+        test("200: responds with 200 status code and an empty object when searching for a topic that has no articles i.e. 'paper'", () => {
+            return request(app)
+            .get("/api/articles?topic=paper")
+            .expect(200)
+            .then(({body}) => {
+                expect(body.articles_by_topic).toEqual([])
+                expect(body.articles_by_topic.length).toBe(0)
+            })
+        })
+    describe("-- query tests- filter by topic -- error", () => {
+        test("404: responds with topic not found if trying to search by a non existant topic", () => {
+            return request(app)
+            .get("/api/articles?topic=trees")
+            .expect(404)
+            .then(({body}) => {
+             expect(body.msg).toBe('topic not found')
+                })
+            })
+        })
+    })
+}) 
 
 
 describe("GET /api", () => {
