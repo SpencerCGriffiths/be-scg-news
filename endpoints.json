@@ -100,7 +100,16 @@
                 "created_at": "expect.any(String)"
             }
   }, 
-  "DELETE /api/comments/:comment_id"  : { 
+  "GET /api/users" : { 
+    "description" : "get request that reponds with an array of all user objects from the users table", 
+    "queries": [], 
+    "exampleResponse" : [{
+        "username": "lurker",
+        "name": "do_nothing",
+        "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+      }]
+  },
+    "DELETE /api/comments/:comment_id"  : { 
     "description": "reqest along this path deletes the comment with the relevant comment id and removes it from the data store. It will return the comment that was deleted", 
     "queries": [], 
     "exampleResponse": {

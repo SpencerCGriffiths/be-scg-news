@@ -452,6 +452,29 @@ describe("PATCH /api/articles/:article_id", () => {
     })
 }) 
 
+
+describe("GET /api/users", () => {
+    describe("-- functionality tests", () => {
+        test("200: responds with 200 status code, and an array of all user objects with key value pair", () => {
+        return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({body}) => { 
+            const userArr = body.users
+            userArr.forEach((user) => { 
+                expect(user).toMatchObject({
+                    username: expect.any(String), 
+                    name: expect.any(String),
+                    avatar_url: expect.any(String)
+                })
+            })
+            expect(userArr.length).toBe(4)
+        })
+        }) 
+    })
+});     
+
+
 describe("DELETE /api/comments/:comment_id", () => {
     describe("-- functionality testing", () => {
     test("200: responds with a 200 status and the deleted comment with the comment id", () => {
