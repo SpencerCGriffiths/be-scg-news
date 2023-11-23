@@ -43,7 +43,7 @@ describe("GET /not-a-path", () => {
 
 describe("GET /articles/:article_id", () => {
     describe("-- functionality tests", () => {
-        test("200: Responds with a 200 status code, correct key value pairs and only one response object as the article id is unique", () => {
+        test("200: Responds with a 200 status code, correct key value pairs including comment count and only one response object as the article id is unique", () => {
             return request(app)
             .get("/api/articles/3")
             .expect(200)
@@ -56,7 +56,8 @@ describe("GET /articles/:article_id", () => {
                 body: expect.any(String),
                 created_at: expect.any(String),
                 votes: expect.any(Number),
-                article_img_url: expect.any(String)
+                article_img_url: expect.any(String),
+                comment_count: "2"
             })
             expect(Object.keys(body).length).toBe(1)
             })
@@ -74,43 +75,6 @@ describe("GET /articles/:article_id", () => {
         test("400: Should respond with 400 bad request error code, when given an invalid search value", () => {
             return request(app)
             .get("/api/articles/banana")
-            .expect(400)
-            .then(({body}) => {
-            expect(body.msg).toBe('bad request')
-            })
-        })
-    })
-    describe("-- Query---- comment_count ---functionality tests", () => {
-        test("200: Should respond with 200, the article object with correct key value pairs and key comment_count with total count of comments for this article_id", () => {
-            return request(app)
-            .get("/api/articles/3?comment_count")
-            .expect(200)
-            .then(({body}) => {
-            expect(body.article).toMatchObject({
-                article_id: 3, 
-                title: expect.any(String),
-                topic: expect.any(String),
-                author: expect.any(String),
-                body: expect.any(String),
-                created_at: expect.any(String),
-                votes: expect.any(Number),
-                article_img_url: expect.any(String),
-                comment_count: "2"
-            })
-            expect(Object.keys(body).length).toBe(1)
-            })
-        })
-        test("404: Should respond with 404, if the article doesn't exist", () => {
-            return request(app)
-            .get("/api/articles/20?comment_count")
-            .expect(404)
-            .then(({body}) => {
-            expect(body.msg).toBe("no article found")
-            })
-         })
-        test("400: Should respond with 400 bad request error code, when given an invalid search value", () => {
-            return request(app)
-            .get("/api/articles/banana?comment_count")
             .expect(400)
             .then(({body}) => {
             expect(body.msg).toBe('bad request')

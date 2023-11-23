@@ -31,9 +31,8 @@ exports.getAllArticles = (req, res, next) => {
 
 exports.getArticleById = (req, res, next) => { 
     const articleId = req.params.article_id
-    const query = req.query
 
-    return selectArticleById(articleId, query).
+    return selectArticleById(articleId).
     then((result) => { 
         res.status(200).send({article : result})
     })
