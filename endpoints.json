@@ -101,7 +101,7 @@
             }
   }, 
   "GET /api/users" : { 
-    "description" : "get request that reponds with an array of all users", 
+    "description" : "get request that reponds with an array of all user objects from the users table", 
     "queries": [], 
     "exampleResponse" : [{
         "username": "lurker",

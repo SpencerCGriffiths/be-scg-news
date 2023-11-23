@@ -454,7 +454,7 @@ describe("PATCH /api/articles/:article_id", () => {
 
 describe("GET /api/users", () => {
     describe("-- functionality tests", () => {
-        test("200: responds with 200 status code, and an array of all user objects with key value pair", () => {
+        test.only("200: responds with 200 status code, and an array of all user objects with key value pair", () => {
         return request(app)
         .get("/api/users")
         .expect(200)
