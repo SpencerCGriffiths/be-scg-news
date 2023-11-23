@@ -104,8 +104,20 @@ describe("GET /api/articles", () => {
                 expect(body.articles).toBeSortedBy('created_at', {descending: true})
             })
         })
-
     })
+    describe("-- query tests- filter by topic", () => {
+        test("200: responds with 200 status code and the articles filtered by the topic query value i.e. 'mitch'", () => {
+            return request(app)
+            .get("/api/articles?topic=mitch")
+            .expect(200)
+            .then(({body}) => {
+                body.articles_by_topic.map((article) => { 
+                    expect(article.topic).toBe('mitch')
+                })
+                expect(body.articles_by_topic.length).toBe(12)
+            })
+        })
+    }) 
 })
 
 

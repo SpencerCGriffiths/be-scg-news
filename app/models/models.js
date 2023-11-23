@@ -95,3 +95,13 @@ exports.updateArticleVotes = (articleId, incVotes) => {
        return result.rows[0]
     })
 }
+
+exports.selectArticlesByTopic = (topic) => { 
+    return db.query(`
+    SELECT *
+    FROM articles
+    WHERE topic = $1`, [topic])
+    .then(({rows}) => { 
+        return rows
+    })
+}

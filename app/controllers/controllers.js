@@ -1,5 +1,5 @@
 
-const { selectAllTopics, retrieveJsonEndPoints, selectArticleById, selectAllArticles, selectCommentsById, checkArticleExists, insertCommentByArticleId, updateArticleVotes } = require("../models/models")
+const { selectAllTopics, retrieveJsonEndPoints, selectArticleById, selectAllArticles, selectCommentsById, checkArticleExists, insertCommentByArticleId, updateArticleVotes, selectArticlesByTopic } = require("../models/models")
 
 exports.fourOhFour = (req, res, next) => {
     res.status(404).send({msg: "path not found"})
@@ -23,10 +23,17 @@ exports.getAllEndpoints = (req, res, next) => {
 } 
 
 exports.getAllArticles = (req, res, next) => { 
-    return selectAllArticles()
-    .then((result) => { 
-        res.status(200).send({ articles: result})
-    })
+    if(req.query.hasOwnProperty("topic")) { 
+        return selectArticlesByTopic(req.query.topic)
+        .then((result) => { 
+            res.status(200).send({ articles_by_topic : result})
+        })
+    } else { 
+        return selectAllArticles()
+        .then((result) => { 
+            res.status(200).send({ articles: result})
+        })
+    }
 } 
 
 exports.getArticleById = (req, res, next) => { 
