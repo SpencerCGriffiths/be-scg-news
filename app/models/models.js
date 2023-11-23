@@ -1,3 +1,4 @@
+const e = require("express")
 const db = require("../../db/connection")
 const fs = require("fs/promises")
 
@@ -100,7 +101,16 @@ exports.selectArticlesByTopic = (topic) => {
     return db.query(`
     SELECT *
     FROM articles
-    WHERE topic = $1`, [topic])
+    WHERE topic = $1`, [topic])    
+    .then(({rows}) => { 
+        return rows
+    })
+}
+
+exports.selectAllUsers = () => { 
+    return db.query(`
+    SELECT *
+    FROM users;`)
     .then(({rows}) => { 
         return rows
     })
@@ -115,5 +125,19 @@ exports.checkTopicExists = (topic) => {
         if(rows.length === 0){ 
             return Promise.reject({status: 404, msg: "topic not found"})
         }
+   })
+}
+
+exports.deleteComment = (commentId) => { 
+    return db.query(
+        `DELETE FROM comments
+        WHERE comment_id = $1
+        RETURNING *;`, [commentId])
+    .then(({rows}) =>{ 
+        if(rows.length === 0) { 
+        return Promise.reject({status: 404, msg: "not found"})
+        } else { 
+            return rows[0]
+          }
     })
 }
