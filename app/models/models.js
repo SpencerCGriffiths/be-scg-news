@@ -1,6 +1,7 @@
 const e = require("express")
 const db = require("../../db/connection")
 const fs = require("fs/promises")
+const { Query } = require("pg")
 
 exports.selectAllTopics = () => { 
     return db.query(`SELECT * FROM topics`)
@@ -30,19 +31,44 @@ exports.selectArticleById = (articleId) => {
     })
 }
 
-exports.selectAllArticles = (query) => { 
+exports.selectAllArticles = ({sort_by, order_by, topic}) => { 
+    
+    const queryVals = []
+
     let queryStr = `SELECT articles.*, COUNT(comments.comment_id) AS comment_count
     FROM articles
     LEFT JOIN comments ON comments.article_id = articles.article_id `
-    let queryVals = [] 
 
-    if(query.topic) { 
-            queryStr += `WHERE articles.topic = $1 `  
-            queryVals.push(query.topic)      
+    const validSort = ["title", "topic", "author", "created_at", "votes", "comment_count"]
+    const validOrder = ["desc", "asc"]
+
+
+    if(sort_by && !validSort.includes(sort_by)) { 
+        return Promise.reject({status: 400, msg: "bad request"})
+    }
+
+    if (order_by && !validOrder.includes(order_by)) { 
+        return Promise.reject({status: 400, msg: "bad request"})
+    }
+
+    let order = `DESC`
+
+    if(order_by) { 
+        order = `ASC`
+    }
+
+    if (!topic && !sort_by) { 
+            queryStr += `GROUP BY articles.article_id ORDER BY created_at ${order}`
         }
 
-    queryStr += `GROUP BY articles.article_id
-    ORDER BY created_at DESC;`
+    if (topic) { 
+        queryStr += `WHERE articles.topic = $1 GROUP BY articles.article_id ` 
+        queryVals.push(topic)  
+    } 
+
+    if(sort_by) { 
+        queryStr += `GROUP BY articles.article_id ORDER BY articles.${sort_by} ${order} ` 
+    }
 
     return db.query(queryStr, queryVals)
     .then(({rows}) => { 
@@ -53,6 +79,35 @@ exports.selectAllArticles = (query) => {
         return result
     })
 }
+
+
+// 
+
+// const validSortBy = ["title", "topic", "author", "created_at", "votes", "comment_count"]
+// const validOrderBy = ["desc", "asc"]
+
+// 
+// let orderBy = "DESC"
+
+
+
+// if(sort_by && !validOrderBy.includes(order))
+ 
+// array of valid arguments
+// not valid promise reject
+// if it is carry on
+
+// if(query.topic) { 
+
+//     }
+//     queryStr += ``
+
+// if(query.sort_by === "" || !query.sort_by) { 
+//     queryStr += `ORDER BY created_at DESC`    
+// } else if (query.sort_by) {
+//     queryStr += `ORDER BY ${query.sort_by} DESC`
+//     queryVals.push(query.sort_by)
+// } 
 
 exports.insertCommentByArticleId = (articleId, newComment) => { 
     const {username, body} = newComment
