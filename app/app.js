@@ -1,28 +1,14 @@
 const express = require("express");
 const { getAllTopics, fourOhFour, getArticleById, getAllEndpoints, getAllArticles, getCommentsById, patchArticleVotes, postCommentByArticleId, removeComment, getAllUsers } = require("./controllers/controllers");
 const { handlePsqlErrors, handleCustomErrors, handleServerErrors } = require("./errors");
+const apiRouter = require("./routes/api-router");
 
 
 const app = express()
+
 app.use(express.json())
 
-app.get("/api/topics", getAllTopics)
-
-app.get("/api", getAllEndpoints)
-
-app.get("/api/articles", getAllArticles)
-
-app.get("/api/articles/:article_id", getArticleById)
-
-app.post("/api/articles/:article_id/comments", postCommentByArticleId)
-
-app.get("/api/articles/:article_id/comments", getCommentsById)
-
-app.patch("/api/articles/:article_id", patchArticleVotes)
-
-app.get("/api/users", getAllUsers)
-
-app.delete("/api/comments/:comment_id", removeComment)
+app.use("/api", apiRouter)
 
 app.all("*", fourOhFour)
 
