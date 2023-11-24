@@ -1,6 +1,7 @@
 const e = require("express")
 const db = require("../../db/connection")
 const fs = require("fs/promises")
+const { Query } = require("pg")
 
 exports.selectAllTopics = () => { 
     return db.query(`SELECT * FROM topics`)
@@ -30,14 +31,47 @@ exports.selectArticleById = (articleId) => {
     })
 }
 
-exports.selectAllArticles = () => { 
-    return db.query(
-        `SELECT articles.*, COUNT(comments.comment_id) AS comment_count
-        FROM articles
-        LEFT JOIN comments ON comments.article_id = articles.article_id
-        GROUP BY articles.article_id
-        ORDER BY created_at DESC;`
-    ).then(({rows}) => { 
+exports.selectAllArticles = ({sort_by, order_by, topic}) => { 
+    
+    const queryVals = []
+
+    let queryStr = `SELECT articles.*, COUNT(comments.comment_id) AS comment_count
+    FROM articles
+    LEFT JOIN comments ON comments.article_id = articles.article_id `
+
+    const validSort = ["title", "topic", "author", "created_at", "votes", "comment_count"]
+    const validOrder = ["desc", "asc"]
+
+
+    if(sort_by && !validSort.includes(sort_by)) { 
+        return Promise.reject({status: 400, msg: "bad request"})
+    }
+
+    if (order_by && !validOrder.includes(order_by)) { 
+        return Promise.reject({status: 400, msg: "bad request"})
+    }
+
+    let order = `DESC`
+
+    if(order_by) { 
+        order = `ASC`
+    }
+
+    if (!topic && !sort_by) { 
+            queryStr += `GROUP BY articles.article_id ORDER BY created_at ${order}`
+        }
+
+    if (topic) { 
+        queryStr += `WHERE articles.topic = $1 GROUP BY articles.article_id ` 
+        queryVals.push(topic)  
+    } 
+
+    if(sort_by) { 
+        queryStr += `GROUP BY articles.article_id ORDER BY articles.${sort_by} ${order} ` 
+    }
+
+    return db.query(queryStr, queryVals)
+    .then(({rows}) => { 
         const result = rows.map((article) => { 
             delete article.body
             return article
@@ -45,6 +79,35 @@ exports.selectAllArticles = () => {
         return result
     })
 }
+
+
+// 
+
+// const validSortBy = ["title", "topic", "author", "created_at", "votes", "comment_count"]
+// const validOrderBy = ["desc", "asc"]
+
+// 
+// let orderBy = "DESC"
+
+
+
+// if(sort_by && !validOrderBy.includes(order))
+ 
+// array of valid arguments
+// not valid promise reject
+// if it is carry on
+
+// if(query.topic) { 
+
+//     }
+//     queryStr += ``
+
+// if(query.sort_by === "" || !query.sort_by) { 
+//     queryStr += `ORDER BY created_at DESC`    
+// } else if (query.sort_by) {
+//     queryStr += `ORDER BY ${query.sort_by} DESC`
+//     queryVals.push(query.sort_by)
+// } 
 
 exports.insertCommentByArticleId = (articleId, newComment) => { 
     const {username, body} = newComment
@@ -119,17 +182,7 @@ exports.selectAllUsers = () => {
     })
 }
 
-exports.checkTopicExists = (topic) => { 
-    return db.query(`
-    SELECT * 
-    FROM topics
-    WHERE slug = $1`, [topic])
-    .then(({rows}) => { 
-        if(rows.length === 0){ 
-            return Promise.reject({status: 404, msg: "topic not found"})
-        }
-   })
-}
+
 
 exports.deleteComment = (commentId) => { 
     return db.query(
@@ -143,4 +196,16 @@ exports.deleteComment = (commentId) => {
             return rows[0]
           }
     })
+}
+
+exports.checkTopicExists = (topic) => { 
+    return db.query(`
+    SELECT * 
+    FROM topics
+    WHERE slug = $1`, [topic])
+    .then(({rows}) => { 
+        if(rows.length === 0){ 
+            return Promise.reject({status: 404, msg: "topic not found"})
+        }
+   })
 }

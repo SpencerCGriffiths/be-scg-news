@@ -112,10 +112,10 @@ describe("GET /api/articles", () => {
             .get("/api/articles?topic=mitch")
             .expect(200)
             .then(({body}) => {
-                body.articles_by_topic.map((article) => { 
+                body.articles.map((article) => { 
                     expect(article.topic).toBe('mitch')
                 })
-                expect(body.articles_by_topic.length).toBe(12)
+                expect(body.articles.length).toBe(12)
             })
         })
         test("200: responds with 200 status code and an empty object when searching for a topic that has no articles i.e. 'paper'", () => {
@@ -123,8 +123,8 @@ describe("GET /api/articles", () => {
             .get("/api/articles?topic=paper")
             .expect(200)
             .then(({body}) => {
-                expect(body.articles_by_topic).toEqual([])
-                expect(body.articles_by_topic.length).toBe(0)
+                expect(body.articles).toEqual([])
+                expect(body.articles.length).toBe(0)
             })
         })
     describe("-- query tests- filter by topic -- error", () => {
@@ -136,6 +136,114 @@ describe("GET /api/articles", () => {
              expect(body.msg).toBe('topic not found')
                 })
             })
+        })
+     describe("-- query tests- sort_by, ASC, DESC", () => {
+        test("200: responds with 200 status code and defaults to an array of all topics sorted by created_at descending", () => {
+            return request(app)
+            .get("/api/articles?sort_by")
+            .expect(200)
+            .then(({body}) => {
+             expect(body.articles).toBeSortedBy('created_at', { descending: true})
+                })
+            })
+        test("200: sort_by can be used with any valid column", () => {
+            return request(app)
+            .get("/api/articles?sort_by=title")
+            .expect(200)
+            .then(({body}) => {
+                expect(body.articles).toBeSortedBy('title', {descending: true})
+                })
+            })
+        test("200: sort_by can be set to ascending or descending for any valid column", () => {
+            return request(app)
+            .get("/api/articles?sort_by=title&order_by=asc")
+            .expect(200)
+            .then(({body}) => {
+                expect(body.articles).toBeSortedBy('title', {ascending: true})
+                })
+            })
+        test("200: responds with 200 status code and defaults to an array of all topics sorted by created_at descending", () => {
+            return request(app)
+            .get("/api/articles?sort_by")
+            .expect(200)
+            .then(({body}) => {
+                expect(body.articles).toBeSortedBy('created_at', { descending: true})
+                })
+            })
+        test("200: should be able to order without a sort by query", () => {
+            return request(app)
+            .get("/api/articles?order_by=asc")
+            .expect(200)
+            .then(({body}) => {
+                expect(body.articles).toBeSortedBy('created_at', { ascending: true})
+                })
+            })
+    describe("-- query tests- errors", () => {
+        test("400: should return bad request when sorting by an invalid category i.e. chair", () => {
+            return request(app)
+            .get("/api/articles?sort_by=chair")
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('bad request')
+                })
+            })
+        test("400: should return bad request when sorting by an invalid value i.e. 1234", () => {
+            return request(app)
+            .get("/api/articles?sort_by=1234")
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('bad request')
+                })
+            })
+        test("400: should return bad request when sorting by a valid collumn that is not accepted in the sort by parameter i.e. article_id", () => {
+            return request(app)
+            .get("/api/articles?sort_by=article_id")
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('bad request')
+                })
+            })
+        test("400: should return bad request when order by invalid value i.e. descs", () => {
+            return request(app)
+            .get("/api/articles?order_by=descs")
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('bad request')
+                })
+            })
+        test("400: should return bad request when order by invalid value i.e. 12345", () => {
+            return request(app)
+            .get("/api/articles?order_by=descs")
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('bad request')
+                })
+            })
+        test("400: should return bad request when order by and sort by are invalid", () => {
+            return request(app)
+            .get("/api/articles?sort_by=article_id&order_by=descs")
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('bad request')
+                })
+            })
+        test("400: should return bad request when order by is invalid and sort by is valid", () => {
+            return request(app)
+            .get("/api/articles?sort_by=title&order_by=descs")
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('bad request')
+                })
+            })
+        test("400: should return bad request when sort by is invalid and order by is valid", () => {
+            return request(app)
+            .get("/api/articles?sort_by=article_id&order_by=desc")
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('bad request')
+                })
+            })
+        })  
         })
     })
 }) 
