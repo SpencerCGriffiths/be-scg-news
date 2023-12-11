@@ -2,9 +2,12 @@ const express = require("express");
 const { getAllTopics, fourOhFour, getArticleById, getAllEndpoints, getAllArticles, getCommentsById, patchArticleVotes, postCommentByArticleId, removeComment, getAllUsers } = require("./controllers/controllers");
 const { handlePsqlErrors, handleCustomErrors, handleServerErrors } = require("./errors");
 const apiRouter = require("./routes/api-router");
+const cors = require('cors')
 
 
 const app = express()
+
+app.use(cors())
 
 app.use(express.json())
 
