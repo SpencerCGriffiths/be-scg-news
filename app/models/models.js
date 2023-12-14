@@ -81,34 +81,6 @@ exports.selectAllArticles = ({sort_by, order_by, topic}) => {
 }
 
 
-// 
-
-// const validSortBy = ["title", "topic", "author", "created_at", "votes", "comment_count"]
-// const validOrderBy = ["desc", "asc"]
-
-// 
-// let orderBy = "DESC"
-
-
-
-// if(sort_by && !validOrderBy.includes(order))
- 
-// array of valid arguments
-// not valid promise reject
-// if it is carry on
-
-// if(query.topic) { 
-
-//     }
-//     queryStr += ``
-
-// if(query.sort_by === "" || !query.sort_by) { 
-//     queryStr += `ORDER BY created_at DESC`    
-// } else if (query.sort_by) {
-//     queryStr += `ORDER BY ${query.sort_by} DESC`
-//     queryVals.push(query.sort_by)
-// } 
-
 exports.insertCommentByArticleId = (articleId, newComment) => { 
     const {username, body} = newComment
     return db.query(`

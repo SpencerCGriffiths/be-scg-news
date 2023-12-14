@@ -88,7 +88,7 @@
     "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
     }
   },  
-  "POST /api/articles/:author_id/comments": { 
+  "POST /api/articles/:article_id/comments": { 
     "description": "post request on this path with a valid article id and formatting for the comment will create a new comment for an article",
     "queries": [],
     "examplePost": { 
