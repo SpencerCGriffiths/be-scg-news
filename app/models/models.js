@@ -62,7 +62,8 @@ exports.selectAllArticles = ({sort_by, order_by, topic}) => {
         }
 
     if (topic) { 
-        queryStr += `WHERE articles.topic = $1 GROUP BY articles.article_id ` 
+        console.log(topic, "model topic")
+        queryStr += `WHERE articles.topic = $1 ` 
         queryVals.push(topic)  
     } 
 
@@ -71,8 +72,11 @@ exports.selectAllArticles = ({sort_by, order_by, topic}) => {
         queryStr += `GROUP BY articles.article_id ORDER BY comment_count ${order}`
     } else if(sort_by) { 
         queryStr += `GROUP BY articles.article_id ORDER BY articles.${sort_by} ${order} ` 
+    } else { 
+        queryStr += `GROUP BY articles.article_id`
     }
-
+        console.log(queryStr)
+        console.log(queryVals)
     return db.query(queryStr, queryVals)
     .then(({rows}) => { 
         const result = rows.map((article) => { 

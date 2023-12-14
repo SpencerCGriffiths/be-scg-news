@@ -190,6 +190,15 @@ describe("GET /api/articles", () => {
                 expect(body.articles).toBeSortedBy('created_at', { ascending: true})
                 })
             })
+        test.only("200: should be able to sort and order alongside topic", () => {
+            return request(app)
+            .get("/api/articles?topic=cats&sort_by=votes&order_by=desc")
+            .expect(200)
+            .then(({body}) => {
+                console.log(body)
+                expect(body.articles).toBeSortedBy('created_at', { ascending: true})
+                })
+            })
     describe("-- query tests- errors", () => {
         test("400: should return bad request when sorting by an invalid category i.e. chair", () => {
             return request(app)
