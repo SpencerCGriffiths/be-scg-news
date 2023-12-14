@@ -190,13 +190,24 @@ describe("GET /api/articles", () => {
                 expect(body.articles).toBeSortedBy('created_at', { ascending: true})
                 })
             })
-        test.only("200: should be able to sort and order alongside topic", () => {
+        test("200: should be able to indicate a topic, sort and order alongside topic", () => {
             return request(app)
             .get("/api/articles?topic=cats&sort_by=votes&order_by=desc")
             .expect(200)
             .then(({body}) => {
-                console.log(body)
-                expect(body.articles).toBeSortedBy('created_at', { ascending: true})
+                expect(body.articles).toBeSortedBy('votes', { descending: true})
+                })
+            })
+        test("200: testing further topics/sort/order", () => {
+            return request(app)
+            .get("/api/articles?topic=mitch&sort_by=comment_count&order_by=asc")
+            .expect(200)
+            .then(({body}) => {
+                const commentCountToNumber = body.articles.map(article => ({
+                    ...article,
+                    comment_count: Number(article.comment_count)
+                  }));
+                expect(commentCountToNumber).toBeSortedBy('comment_count', { ascending: true})
                 })
             })
     describe("-- query tests- errors", () => {

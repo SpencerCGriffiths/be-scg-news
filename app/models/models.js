@@ -51,32 +51,33 @@ exports.selectAllArticles = ({sort_by, order_by, topic}) => {
         return Promise.reject({status: 400, msg: "bad request"})
     }
 
-    let order = `DESC`
+    let order = ` DESC `
 
     if(order_by) { 
         order = order_by
     }
 
+
     if (!topic && !sort_by) { 
-            queryStr += `GROUP BY articles.article_id ORDER BY created_at ${order}`
+            queryStr += ` GROUP BY articles.article_id ORDER BY created_at ${order} `
         }
 
-    if (topic) { 
-        console.log(topic, "model topic")
-        queryStr += `WHERE articles.topic = $1 ` 
-        queryVals.push(topic)  
+    if (!topic && sort_by) { 
+        queryStr += ` GROUP BY articles.article_id`  
     } 
 
-
+    if (topic && sort_by || topic && !sort_by) { 
+        queryStr += ` WHERE articles.topic = $1 GROUP BY articles.article_id` 
+        queryVals.push(topic)  
+    } 
+    
     if(sort_by === "comment_count") {
-        queryStr += `GROUP BY articles.article_id ORDER BY comment_count ${order}`
+        queryStr += ` ORDER BY comment_count ${order} `
     } else if(sort_by) { 
-        queryStr += `GROUP BY articles.article_id ORDER BY articles.${sort_by} ${order} ` 
-    } else { 
-        queryStr += `GROUP BY articles.article_id`
+        queryStr += ` ORDER BY articles.${sort_by} ${order} ` 
     }
-        console.log(queryStr)
-        console.log(queryVals)
+
+
     return db.query(queryStr, queryVals)
     .then(({rows}) => { 
         const result = rows.map((article) => { 
