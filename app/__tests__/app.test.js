@@ -154,6 +154,18 @@ describe("GET /api/articles", () => {
                 expect(body.articles).toBeSortedBy('title', {descending: true})
                 })
             })
+        test("200: sort_by can be used with comment_count column", () => {
+            return request(app)
+            .get("/api/articles?sort_by=comment_count")
+            .expect(200)
+            .then(({body}) => {
+                const commentCountToNumber = body.articles.map(article => ({
+                    ...article,
+                    comment_count: Number(article.comment_count)
+                  }));
+                expect(commentCountToNumber).toBeSortedBy('comment_count', {descending: true})
+                })
+            })
         test("200: sort_by can be set to ascending or descending for any valid column", () => {
             return request(app)
             .get("/api/articles?sort_by=title&order_by=asc")

@@ -54,7 +54,7 @@ exports.selectAllArticles = ({sort_by, order_by, topic}) => {
     let order = `DESC`
 
     if(order_by) { 
-        order = `ASC`
+        order = order_by
     }
 
     if (!topic && !sort_by) { 
@@ -66,7 +66,10 @@ exports.selectAllArticles = ({sort_by, order_by, topic}) => {
         queryVals.push(topic)  
     } 
 
-    if(sort_by) { 
+
+    if(sort_by === "comment_count") {
+        queryStr += `GROUP BY articles.article_id ORDER BY comment_count ${order}`
+    } else if(sort_by) { 
         queryStr += `GROUP BY articles.article_id ORDER BY articles.${sort_by} ${order} ` 
     }
 
